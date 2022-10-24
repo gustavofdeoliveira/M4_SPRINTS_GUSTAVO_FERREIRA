@@ -1,3 +1,5 @@
+//Estes exercicios foram realizados em conjunto com os demais alunos, Gabriel Rios, Lyorei, Henrique lemos, Gabriel Carneiro, Julia Togni e Livia Bonoto. Devido aos enunciados incompreensiveis de se entenderem e sem inputs de entrada e saida!
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -7,14 +9,11 @@ using namespace std;
 */
 
 
-float converteSensor(int medida, int min, int max){
-    // Escreva a função aqui
-  max = max - min;
-  medida = medida - min;
-  min = 0;
-  float resultado = medida*100;
-  resultado = resultado / max;
-  return resultado;
+int converteSensor(int medida, int minimo, int maximo) {
+    medida = (medida - minimo) * 100; 
+    int delta = maximo - minimo; 
+    int resultado = (medida - minimo) * 100 / (maximo - minimo); 
+	return (medida - minimo) * 100 / (maximo - minimo);
 }
 
 
@@ -42,6 +41,7 @@ int main(){
 
 int leComando(){
   int valorEntrada;
+  cout << "Digite o um valor:"<< endl;
   cin >> valorEntrada;
   return valorEntrada;
 }
@@ -51,7 +51,7 @@ int leComando(){
 // Descomente a função main abaixo para testar o exercício 2
 /*
 int main(){
-  cout << "Digite o Comando (0 ou 1):"<< endl;
+  
 	int saida = leComando();
 	cout << "Comando Recebido: " << saida << endl;
 }
@@ -70,10 +70,10 @@ int insereVetor(int elemento, int valorMax, int lastPos, int *Vetor){
   if(lastPos+1 >= valorMax){
     cout << "Erros: valorMax: "<<valorMax<<endl;
   }else{
-    Vetor[lastPos +1] = elemento;
+    Vetor[lastPos] = elemento;
      
   }
-  return *Vetor; 
+  return lastPos+1; 
 }
 
 /*
@@ -142,7 +142,7 @@ char* dirMaiorDist(int *Vetor){
   int maiorDistancia = Vetor[0];
   int indice = 0;
   char* direcoes[4] = {(char*) "Direita", (char*)"Esquerda", (char* )"Frente",(char*)"Tras"}; 
-  for(int i =1; i <=3;i++){
+  for(int i =0; i <4;i++){
     if(Vetor[i]> maiorDistancia){
       maiorDistancia = Vetor[i];
       indice  = i;
@@ -153,7 +153,7 @@ char* dirMaiorDist(int *Vetor){
 
 int maiorDist(int *Vetor){
   int maiorDistancia = Vetor[0];
-  for(int i =1; i <=3;i++){
+  for(int i =0; i <4;i++){
     if(Vetor[i]> maiorDistancia){
       maiorDistancia = Vetor[i];
     }
@@ -261,28 +261,40 @@ A função final deve utilizar as funções declaradas acima para ler os sensore
 
 
 // Descomente a função main abaixo para testar o exercício 4
-int adicionarVetor(){
-  
-}
-int sensores(){
-  char* direcoes[4] = {(char*) "Direita", (char*)"Esquerda", (char* )"Frente",(char*)"Tras"}; 
-  int valorDistancia[4];
-  for(int i=0; i!=4;i++){
-    cout << "Digite o valor da distancia da " << direcoes[i];
-    cin >> valorDistancia[i];
-  }
-  adicionarVetor();
-  return 0;
+int dirigeRobo(int *Vetor,int maxv){
+	int maxVetor = maxv;
+	int *vetorMov = Vetor;
+	int lastPosVetor = 0;
+	int dirigido = 1;		
+	while(dirigido){		
+    for (int i = 0; i < 4; i++){
+      int medida = leComando();
+      medida = converteSensor(medida, 0, 830);
+		  lastPosVetor = insereVetor(medida, maxVetor, lastPosVetor, vetorMov);
+    }		
+		dirigido = continuar();		
+	}
+	return lastPosVetor;
 }
 
-int main() {
-	// Escreva os testes aqui
-  int entrada = 0;
-	while(entrada  != 0){
-    sensores();
-    cout << "Digite 0 para parar o programa:"<< endl;
-    
-   cin >> entrada;
-  }
+void tragetoPercorrido(int *v,int distacia){		
+	int *vetorMov = v;
+	int maiorDir = 0;
+	
+	for(int i = 0; i< distacia; i+=4){
+		char *direcao = dirMaiorDist(&(vetorMov[i]));
+    int maiordir = maiorDist(&(vetorMov[i]));
+		cout << "Movimentando para "<< direcao<< " distancia ="<< maiordir << endl;
+	}
+}
+
+int main(int argc, char** argv) {
+	int maxVetor = 100;
+	int movimentacao[maxVetor*4];
+	int lastPosVet = 0;
+	
+	lastPosVet = dirigeRobo(movimentacao,maxVetor);
+	tragetoPercorrido(movimentacao,lastPosVet);
+	
 	return 0;
 }
